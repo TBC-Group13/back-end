@@ -12,23 +12,4 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
-"""
 
-Write log in and registration logics (using django rest framework)
-
-JWT auth
-
-Log in should be by email and password
-
-Registration:
-
-username
-
-email (email verification for future improvement)
-
-password
-
-created at field
-
-status
-"""

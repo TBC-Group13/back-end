@@ -1,10 +1,17 @@
-from rest_framework import status
+from django.db.models import Sum
+from django.shortcuts import get_object_or_404
+from rest_framework import status, viewsets, permissions
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+
+from .models import User
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 class UserRegistrationView(APIView):
@@ -57,3 +64,62 @@ class UserLoginView(APIView):
             return Response({'error': 'Invalid credentials'},
                             status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh_token')
+            if not refresh_token:
+                return Response({'error': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Blacklist the token
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({'message': 'Logged out successfully.'}, status=status.HTTP_205_RESET_CONTENT)
+        except TokenError:
+            return Response({'error': 'Invalid refresh token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user  # authenticated user
+        return Response({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'created_at': user.created_at,
+                'status': user.status,
+            }, status=status.HTTP_200_OK)
+
+
+# to change password, username...
+class UserSettingsView(APIView):
+    pass
+
+
+class UserReputationAPIView(APIView):
+    def get(self, request, user_id):
+        # Fetch the user or return a 404 if not found
+        user = get_object_or_404(User, id=user_id)
+
+        # Calculate likes and dislikes
+        likes_count = user.liked_answers.count()  # Count liked answers
+        dislikes_count = user.disliked_answers.count()  # Count disliked answers
+
+        # Calculate reputation
+        reputation = likes_count - dislikes_count
+
+        # Return response
+        return Response({
+            "user_id": user_id,
+            "likes": likes_count,
+            "dislikes": dislikes_count,
+            "reputation": reputation,
+        })
+

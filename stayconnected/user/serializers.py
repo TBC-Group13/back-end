@@ -25,3 +25,25 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True, write_only=True)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    questions_count = serializers.SerializerMethodField()
+    answers_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'email', 'reputation', 'bio',
+            'location', 'website', 'date_joined', 'questions_count',
+            'answers_count'
+        ]
+        read_only_fields = ['reputation']
+
+
+    def get_questions_count(self, obj):
+        return obj.questions.count()
+
+
+    def get_answers_count(self, obj):
+        return obj.answers.count()
