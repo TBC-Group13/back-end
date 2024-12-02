@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import User
-from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer, UserProfileSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.exceptions import TokenError
@@ -86,16 +86,29 @@ class UserLogoutView(APIView):
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request):
-        user = request.user  # authenticated user
-        return Response({
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'created_at': user.created_at,
-                'status': user.status,
-            }, status=status.HTTP_200_OK)
+        user = request.user
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        user = request.user
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        user = request.user
+        if user.profile_photo:
+            user.profile_photo.delete()
+            user.profile_photo = None
+            user.save()
+            return Response({"message": "Profile photo removed."}, status=status.HTTP_200_OK)
+        return Response({"error": "No profile photo to remove."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # to change password, username...

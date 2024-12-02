@@ -47,3 +47,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_answers_count(self, obj):
         return obj.answers.count()
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'created_at', 'status', 'profile_photo']
