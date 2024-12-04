@@ -156,4 +156,7 @@ SIMPLE_JWT = {
 #     "http://localhost:5173",
 # ]
 
-CORS_ALLOW_ALL_ORIGINS = True  #this line should be deleted and origins must be defined in the CORS_ALLOWED_ORIGINS
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = "*"
+CORS_ALLOW_METHODS = "*"
