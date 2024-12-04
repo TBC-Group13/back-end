@@ -58,7 +58,7 @@ The API will be available at `http://127.0.0.1:8000/`.
 ## API Endpoints
 1. User Registration URL:
 ``` bash
-       http://127.0.0.1:8000/api/profile/
+       http://127.0.0.1:8000/api/register/
 ```
 **Method**: POST
 
