@@ -13,7 +13,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'created_at', 'status']
         extra_kwargs = {'password': {'write_only': True}}
 
+    def validate(self, data):
+        if data['password'] != data['repeat_password']:
+            raise serializers.ValidationError({"repeat_password": "Passwords do not match."})
+        return data
+
     def create(self, validated_data):
+        validated_data.pop('repeat_password')
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -40,10 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['reputation']
 
-
     def get_questions_count(self, obj):
         return obj.questions.count()
-
 
     def get_answers_count(self, obj):
         return obj.answers.count()
