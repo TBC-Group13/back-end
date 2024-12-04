@@ -44,9 +44,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'user',
     'qa',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -149,3 +151,9 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+# CORS_ALLOWED_ORIGINS = [
+#
+#     "http://localhost:5173",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True  #this line should be deleted and origins must be defined in the CORS_ALLOWED_ORIGINS
