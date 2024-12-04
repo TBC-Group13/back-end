@@ -38,31 +38,72 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class UserLoginView(APIView):
+#     permission_classes = [AllowAny]
+#
+#     def post(self, request):
+#         serializer = UserLoginSerializer(data=request.data)
+#         if serializer.is_valid():
+#             email = serializer.validated_data['email']
+#             password = serializer.validated_data['password']
+#             user = authenticate(email=email, password=password)
+#
+#             if user is not None:
+#                 refresh = RefreshToken.for_user(user)
+#                 return Response({
+#                     'tokens': {
+#                         'refresh': str(refresh),
+#                         'access': str(refresh.access_token),
+#                     },
+#                     'user': {
+#                         'id': user.id,
+#                         'username': user.username,
+#                         'email': user.email
+#                     }
+#                 })
+#             return Response({'error': 'Invalid credentials'},
+#                             status=status.HTTP_401_UNAUTHORIZED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+
 class UserLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data['email']
+            identifier = serializer.validated_data['identifier']
             password = serializer.validated_data['password']
-            user = authenticate(email=email, password=password)
 
-            if user is not None:
-                refresh = RefreshToken.for_user(user)
-                return Response({
-                    'tokens': {
-                        'refresh': str(refresh),
-                        'access': str(refresh.access_token),
-                    },
-                    'user': {
-                        'id': user.id,
-                        'username': user.username,
-                        'email': user.email
-                    }
-                })
-            return Response({'error': 'Invalid credentials'},
-                            status=status.HTTP_401_UNAUTHORIZED)
+            # First, try to find the user by either username or email
+            try:
+                if '@' in identifier:
+                    user = User.objects.get(email=identifier)
+                else:
+                    user = User.objects.get(username=identifier)
+
+                # Check password
+                if user.check_password(password):
+                    refresh = RefreshToken.for_user(user)
+                    return Response({
+                        'tokens': {
+                            'refresh': str(refresh),
+                            'access': str(refresh.access_token),
+                        },
+                        'user': {
+                            'id': user.id,
+                            'username': user.username,
+                            'email': user.email
+                        }
+                    })
+                else:
+                    return Response({'error': 'Invalid credentials'},
+                                    status=status.HTTP_401_UNAUTHORIZED)
+
+            except User.DoesNotExist:
+                return Response({'error': 'Invalid credentials'},
+                                status=status.HTTP_401_UNAUTHORIZED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -29,8 +29,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
+# class UserLoginSerializer(serializers.Serializer):
+#     email = serializers.EmailField(required=True)
+#     password = serializers.CharField(required=True, write_only=True)
+
 class UserLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
+    identifier = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
 
 
