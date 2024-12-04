@@ -67,7 +67,8 @@ The API will be available at `http://127.0.0.1:8000/`.
 {
     "username": "testuser",
     "email": "testuser@example.com",
-    "password": "securepassword123!"
+    "password": "securepassword123!",
+    "repeat_password": "securepassword"
 }
 ```
 
