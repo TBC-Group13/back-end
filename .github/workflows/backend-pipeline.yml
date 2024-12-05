@@ -39,12 +39,7 @@ jobs:
         source venv/bin/activate
         cd stayconnected
         python manage.py migrate
-
-    - name: Restart Gunicorn
-      run: |
-        source venv/bin/activate
-        sudo systemctl daemon-reload
-        sudo systemctl restart gunicorn
+        
     - name: Check Gunicorn version
       run: |
         source venv/bin/activate
@@ -53,4 +48,10 @@ jobs:
     - name: Check if Gunicorn is running
       run: |
         ps aux | grep gunicorn
+
+    - name: Restart Gunicorn
+      run: |
+        source venv/bin/activate
+        sudo systemctl daemon-reload
+        sudo systemctl restart gunicorn
 
