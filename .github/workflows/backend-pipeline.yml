@@ -40,10 +40,6 @@ jobs:
         cd stayconnected
         python manage.py migrate
         
-    - name: Deploy Frontend
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
     - name: Set up SSH key
       uses: webfactory/ssh-agent@v0.5.3
       with:
@@ -52,6 +48,7 @@ jobs:
     - name: SSH into server and restart Gunicorn and Nginx
       run: |
         ssh -o StrictHostKeyChecking=no ubuntu@18.198.208.73 << 'EOF'
+          echo "Restarting Gunicorn and Nginx..."
           sudo systemctl restart gunicorn
           sudo systemctl reload nginx
         EOF
