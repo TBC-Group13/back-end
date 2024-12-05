@@ -288,7 +288,7 @@ Content-Type: multipart/form-data
 **Example curl**:
 ```
 curl -X PATCH http://127.0.0.1:8000/api/user/settings/ \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzMzg3NDI4LCJpYXQiOjE3MzMzODM4MjgsImp0aSI6IjNkODE2ZDJhOGE4ZTRhMzhiMzBkODU3ZWMxYWQ2NDgxIiwi" \
+     -H "Authorization: Bearer ACCESS_TOKEN" \
      -F "username=newusername" 
 ```
 
