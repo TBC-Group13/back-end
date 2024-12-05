@@ -1,6 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.messages.storage import default_storage
-from django.db.models import Sum
+from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Sum, F
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, viewsets, permissions
@@ -228,4 +229,46 @@ class UserReputationAPIView(APIView):
             "reputation": reputation,
             "answers_count": user.answers.count(),
             "accepted_answers": user.accepted_count,
+        })
+
+
+class UserReputationListAPIView(APIView):
+    def get(self, request):
+        ordering = request.query_params.get('ordering', '-reputation_score')
+        page = int(request.query_params.get('page', 1))
+        page_size = int(request.query_params.get('page_size', 20))
+
+        users = User.objects.annotate(
+            reputation_score=F('like_count') * 10 - F('dislike_count') * 5 + F('accepted_count') * 15
+        )
+
+        users = users.order_by(ordering)
+        paginator = Paginator(users, page_size)
+
+        try:
+            page_obj = paginator.page(page)
+        except EmptyPage:
+            return Response({
+                'error': 'Page not found',
+                'total_pages': paginator.num_pages
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        user_data = []
+        for user in page_obj:
+            user_data.append({
+                "user_id": user.id,
+                "username": user.username,
+                "reputation_score": user.reputation_score,
+                "likes": user.like_count,
+                "dislikes": user.dislike_count,
+                "answers_count": user.answers.count(),
+                "accepted_answers": user.accepted_count,
+            })
+
+        return Response({
+            'users': user_data,
+            'total_users': paginator.count,
+            'total_pages': paginator.num_pages,
+            'current_page': page,
+            'page_size': page_size,
         })
