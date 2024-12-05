@@ -211,21 +211,21 @@ class UserSettingsView(APIView):
 
 class UserReputationAPIView(APIView):
     def get(self, request, user_id):
-        # Fetch the user or return a 404 if not found
         user = get_object_or_404(User, id=user_id)
 
-        # Calculate likes and dislikes
-        likes_count = user.liked_answers.count()  # Count liked answers
-        dislikes_count = user.disliked_answers.count()  # Count disliked answers
+        likes_count = user.like_count
+        dislikes_count = user.dislike_count
+        accepted_count = user.accepted_count
 
-        # Calculate reputation
-        reputation = likes_count - dislikes_count
+        # Calculate reputation to look more like stackoverflow
+        reputation = 10 * likes_count - 5 * dislikes_count + 15 * accepted_count
 
-        # Return response
         return Response({
             "user_id": user_id,
             "likes": likes_count,
             "dislikes": dislikes_count,
             "reputation": reputation,
+            "answers_count": user.answers.count(),
+            "accepted_answers": user.accepted_count,
         })
 
