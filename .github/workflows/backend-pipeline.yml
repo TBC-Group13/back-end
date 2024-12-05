@@ -40,18 +40,17 @@ jobs:
         cd stayconnected
         python manage.py migrate
         
-    - name: Check Gunicorn version
+      # Restart Gunicorn and reload Nginx
+    - name: Restart Gunicorn and Reload Nginx
       run: |
-        source venv/bin/activate
-        gunicorn --version
-
-    - name: Check if Gunicorn is running
-      run: |
-        ps aux | grep gunicorn
-
-    - name: Restart Gunicorn
-      run: |
-        source venv/bin/activate
-        sudo systemctl daemon-reload
         sudo systemctl restart gunicorn
+        sudo systemctl reload nginx
+      env:
+        HOME: /home/ubuntu  # Ensure it is the correct user where the services are running
+          
+      # Verify that the services are running (optional check)
+    - name: Verify Gunicorn and Nginx status
+      run: |
+        sudo systemctl status gunicorn
+        sudo systemctl status nginx
 
