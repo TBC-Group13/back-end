@@ -21,14 +21,20 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install backend dependencies
+    - name: Print working directory
+      run: pwd  # Prints the current directory
+
+    - name: List files in the directory
+      run: ls -alh  # List all files in the current directory
+
+    - name: Install dependencies
       run: |
-        cd ${{ github.workspace }}/back-end  # Navigate to the back-end directory
+        cd back-end
         python3 -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
         pip install -r requirements.txt
-
+          
     - name: Run Migrations
       run: |
         cd ~/back-end
