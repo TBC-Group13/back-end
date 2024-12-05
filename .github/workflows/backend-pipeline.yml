@@ -29,7 +29,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd back-end
         python3 -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
