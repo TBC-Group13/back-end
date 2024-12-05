@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.messages.storage import default_storage
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -181,7 +182,7 @@ class UserSettingsView(APIView):
 
         if 'profile_photo' in data:
             if user.profile_photo:
-                default_storage.delete(user.profile_photo.path) # this correct?
+                default_storage.delete(user.profile_photo.path)  # this correct?
 
             user.profile_photo = data['profile_photo']
 
@@ -211,21 +212,20 @@ class UserSettingsView(APIView):
 
 class UserReputationAPIView(APIView):
     def get(self, request, user_id):
-        # Fetch the user or return a 404 if not found
         user = get_object_or_404(User, id=user_id)
 
-        # Calculate likes and dislikes
-        likes_count = user.liked_answers.count()  # Count liked answers
-        dislikes_count = user.disliked_answers.count()  # Count disliked answers
+        likes_count = user.like_count
+        dislikes_count = user.dislike_count
+        accepted_count = user.accepted_count
 
-        # Calculate reputation
-        reputation = likes_count - dislikes_count
+        # Calculate reputation to look more like stackoverflow
+        reputation = 10 * likes_count - 5 * dislikes_count + 15 * accepted_count
 
-        # Return response
         return Response({
             "user_id": user_id,
             "likes": likes_count,
             "dislikes": dislikes_count,
             "reputation": reputation,
+            "answers_count": user.answers.count(),
+            "accepted_answers": user.accepted_count,
         })
-

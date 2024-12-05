@@ -13,10 +13,41 @@ class User(AbstractUser):
         blank=True,
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])],
     )
+    like_count = models.IntegerField(default=0)
+    dislike_count = models.IntegerField(default=0)
+    accepted_count = models.IntegerField(default=0)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.email
 
+    def update_like_count(self):
+        """
+        Update the total number of likes received across all answers.
+        Call this method whenever likes/dislikes change.
+        """
+        self.like_count = self.answers.aggregate(
+            total_likes=models.Count('likes')
+        )['total_likes'] or 0
+        self.save()
+
+    def update_dislike_count(self):
+        """
+        Update the total number of dislikes received across all answers.
+        Call this method whenever likes/dislikes change.
+        """
+        self.dislike_count = self.answers.aggregate(
+            total_dislikes=models.Count('dislikes')
+        )['total_dislikes'] or 0
+        self.save()
+
+    def update_accepted_count(self):
+        """
+        Update the total number of accepted answers.
+        Call this method whenever an answer's is_correct status changes.
+        """
+        self.accepted_count = self.answers.filter(is_correct=True).count()
+        self.save()
 
