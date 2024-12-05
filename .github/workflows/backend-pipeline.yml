@@ -36,7 +36,7 @@ jobs:
           
     - name: Run Migrations
       run: |
-        cd ~/back-end/stayconnected
+        cd stayconnected
         python manage.py migrate
 
     - name: Restart Gunicorn
