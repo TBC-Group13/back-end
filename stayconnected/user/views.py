@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.messages.storage import default_storage
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -110,6 +111,7 @@ class UserLoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 class UserLogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -181,7 +183,7 @@ class UserSettingsView(APIView):
 
         if 'profile_photo' in data:
             if user.profile_photo:
-                default_storage.delete(user.profile_photo.path) # this correct?
+                default_storage.delete(user.profile_photo.path)  # this correct?
 
             user.profile_photo = data['profile_photo']
 
@@ -228,4 +230,3 @@ class UserReputationAPIView(APIView):
             "answers_count": user.answers.count(),
             "accepted_answers": user.accepted_count,
         })
-
