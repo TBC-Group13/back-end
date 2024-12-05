@@ -1,7 +1,10 @@
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.messages.storage import default_storage
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -152,9 +155,58 @@ class UserProfileView(APIView):
         return Response({"error": "No profile photo to remove."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# to change password, username...
 class UserSettingsView(APIView):
-    pass
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user
+        data = request.data
+        if 'username' in data:
+            new_username = data['username']
+            if User.objects.exclude(pk=user.pk).filter(username=new_username).exists():
+                return Response(
+                    {'username': 'This username is already taken.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            user.username = new_username
+
+        if 'email' in data:
+            new_email = data['email']
+            if User.objects.exclude(pk=user.pk).filter(email=new_email).exists():
+                return Response(
+                    {'email': 'This email is already in use.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            user.email = new_email
+
+        if 'profile_photo' in data:
+            if user.profile_photo:
+                default_storage.delete(user.profile_photo.path) # this correct?
+
+            user.profile_photo = data['profile_photo']
+
+        if 'password' in data:
+            new_password = data['password']
+
+            try:
+                validate_password(new_password, user)
+            except ValidationError as e:
+                return Response(
+                    {'password': list(e.messages)},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            user.set_password(new_password)
+        try:
+            user.full_clean()
+            user.save()
+        except ValidationError as e:
+            return Response(
+                {'detail': e.message_dict},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserReputationAPIView(APIView):
