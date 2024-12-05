@@ -47,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'reputation', 'bio',
             'location', 'website', 'date_joined', 'questions_count',
-            'answers_count', 'like_count', 'dislike_count', 'accepted_count'
+            'answers_count'
         ]
         read_only_fields = ['reputation']
 
