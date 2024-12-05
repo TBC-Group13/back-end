@@ -81,7 +81,7 @@ The API will be available at `http://127.0.0.1:8000/`.
 **Payload**:
 ```
 {
-    "username": "testuser",
+    "identifier": "testuser",
     "password": "securepassword123"
 }
 ```
@@ -288,11 +288,8 @@ Content-Type: multipart/form-data
 **Example curl**:
 ```
 curl -X PATCH http://127.0.0.1:8000/api/user/settings/ \
-     -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -F "username=newusername" \
-     -F "email=newemail@example.com" \
-     -F "profile_photo=@/path/to/new/photo.jpg" \
-     -F "password=NewStrongPassword123!"
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzMzg3NDI4LCJpYXQiOjE3MzMzODM4MjgsImp0aSI6IjNkODE2ZDJhOGE4ZTRhMzhiMzBkODU3ZWMxYWQ2NDgxIiwi" \
+     -F "username=newusername" 
 ```
 
 # General Notes:
