@@ -1,0 +1,42 @@
+---
+
+name: Backend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Backend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        cd ~/back-end
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Migrations
+      run: |
+        cd ~/back-end
+        source venv/bin/activate
+        cd ~/back-end/stayconnected
+        python manage.py migrate
+
+    - name: Restart Gunicorn
+      run: |
+        sudo systemctl restart gunicorn
+
