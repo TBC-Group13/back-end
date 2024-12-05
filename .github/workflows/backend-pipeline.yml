@@ -21,9 +21,9 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install Dependencies
+    - name: Install backend dependencies
       run: |
-        cd ~/back-end
+        cd ${{ github.workspace }}/back-end  # Navigate to the back-end directory
         python3 -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
