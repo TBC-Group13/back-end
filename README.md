@@ -272,7 +272,28 @@ Authorization: Bearer <Paste access token without ""-s>
 **Key**: profile_photo ```(File)```
 
 **Value**: Upload an image file (.jpg, .jpeg, .png).
+15. Update User Settings URL:
+```bash
+http://127.0.0.1:8000/api/user/settings/
+```
 
+**Method**: POST
+
+**Headers**:
+```
+Authorization: Bearer <Paste access token without ""-s>
+Content-Type: multipart/form-data
+```
+
+**Example curl**:
+```
+curl -X PATCH http://127.0.0.1:8000/api/user/settings/ \
+     -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+     -F "username=newusername" \
+     -F "email=newemail@example.com" \
+     -F "profile_photo=@/path/to/new/photo.jpg" \
+     -F "password=NewStrongPassword123!"
+```
 
 # General Notes:
 **Ensure the server is running and accessible when making requests.**
