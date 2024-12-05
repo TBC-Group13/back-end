@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-&-bw@cvikcm34$t7&pj(=yd7$+7n!qff@5^e@vj$*7&$5!2v2i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -83,10 +83,14 @@ WSGI_APPLICATION = 'stayconnected.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'stayconnected',
+        'USER': 'stayconnected',
+        'PASSWORD': 'stayconnected',
+        'HOST': '54.93.246.114',
+        'PORT': '5432',
+     }
 }
 
 
