@@ -36,6 +36,7 @@ jobs:
           
     - name: Run Migrations
       run: |
+        source venv/bin/activate
         cd stayconnected
         python manage.py migrate
 
