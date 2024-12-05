@@ -42,5 +42,15 @@ jobs:
 
     - name: Restart Gunicorn
       run: |
+        source venv/bin/activate
         sudo systemctl daemon-reload
         sudo systemctl restart gunicorn
+    - name: Check Gunicorn version
+      run: |
+        source venv/bin/activate
+        gunicorn --version
+
+    - name: Check if Gunicorn is running
+      run: |
+        ps aux | grep gunicorn
+
