@@ -111,7 +111,6 @@ class UserLoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@csrf_exempt
 class UserLogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
