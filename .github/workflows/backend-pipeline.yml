@@ -40,17 +40,19 @@ jobs:
         cd stayconnected
         python manage.py migrate
         
-      # Restart Gunicorn and reload Nginx
-    - name: Restart Gunicorn and Reload Nginx
-      run: |
-        sudo systemctl restart gunicorn
-        sudo systemctl reload nginx
-      env:
-        HOME: /home/ubuntu  # Ensure it is the correct user where the services are running
-          
-      # Verify that the services are running (optional check)
-    - name: Verify Gunicorn and Nginx status
-      run: |
-        sudo systemctl status gunicorn
-        sudo systemctl status nginx
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
+    - name: Set up SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: SSH into server and restart Gunicorn and Nginx
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@18.198.208.73 << 'EOF'
+          sudo systemctl restart gunicorn
+          sudo systemctl reload nginx
+        EOF
+      env:
+        HOME: /home/ubuntu
