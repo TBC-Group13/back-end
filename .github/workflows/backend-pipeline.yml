@@ -41,8 +41,17 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ubuntu@18.198.208.73 << 'EOF'
           echo "Pulling latest code..."
-          cd /ubuntu/home/back-end
-          git pull origin main
+          echo "Stashing local changes (if any)..."
+          git stash || true
+          echo "Pulling latest changes from the repository..."
+          git pull origin main || { echo "Git pull failed"; exit 1; }
+          echo "Reapplying stashed changes (if any)..."
+          git stash pop || true
+          
+          echo "Running migrations..."
+          source venv/bin/activate
+          python stayconnected/manage.py migrate
+
           echo "Restarting Gunicorn and Nginx..."
           sudo systemctl restart gunicorn
           sudo systemctl reload nginx
