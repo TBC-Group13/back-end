@@ -1,5 +1,3 @@
----
-
 name: Backend CI/CD Pipeline
 
 on:
@@ -21,12 +19,6 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Print working directory
-      run: pwd  # Prints the current directory
-
-    - name: List files in the directory
-      run: ls -alh  # List all files in the current directory
-
     - name: Install dependencies
       run: |
         python3 -m venv venv
@@ -45,9 +37,12 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: SSH into server and restart Gunicorn and Nginx
+    - name: SSH into server, pull latest code, and restart Gunicorn and Nginx
       run: |
         ssh -o StrictHostKeyChecking=no ubuntu@18.198.208.73 << 'EOF'
+          echo "Pulling latest code..."
+          cd /ubuntu/home/back-end
+          git pull origin main
           echo "Restarting Gunicorn and Nginx..."
           sudo systemctl restart gunicorn
           sudo systemctl reload nginx
