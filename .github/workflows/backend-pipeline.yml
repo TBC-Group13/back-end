@@ -42,12 +42,9 @@ jobs:
         ssh -o StrictHostKeyChecking=no ubuntu@18.198.208.73 << 'EOF'
           echo "Pulling latest code..."
           cd /home/ubuntu/back-end && \
-          git stash || true
-          echo "Pulling latest changes from the repository..."
-          git pull origin main || { echo "Git pull failed"; exit 1; }
-          echo "Reapplying stashed changes (if any)..."
-          git stash pop || true
-          
+          git pull origin main
+          git reset --hard
+         
           echo "Running migrations..."
           source venv/bin/activate
           python stayconnected/manage.py migrate
