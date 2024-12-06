@@ -263,6 +263,7 @@ class UserReputationListAPIView(APIView):
                 "dislikes": user.dislike_count,
                 "answers_count": user.answers.count(),
                 "accepted_answers": user.accepted_count,
+                "profile_photo": request.build_absolute_uri(user.profile_photo.url) if user.profile_photo else None,
             })
 
         return Response({
