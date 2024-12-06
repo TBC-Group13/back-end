@@ -17,6 +17,11 @@ def update_dislikes_count(sender, instance, action, **kwargs):
 
 
 @receiver(post_save, sender=Answer)
-def update_accepted_count(sender, instance, created, **kwargs):
-    if not created and 'is_correct' in instance.changed_data:
-        instance.author.update_accepted_count()
+def update_accepted_count(sender, instance, **kwargs):
+    if instance.is_correct:
+        user_profile, created = User.objects.get_or_create(username=instance.author.username)
+        user_profile.accepted_count = Answer.objects.filter(
+            author=instance.author,
+            is_correct=True
+        ).count()
+        user_profile.save()
