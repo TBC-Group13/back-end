@@ -41,6 +41,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ubuntu@18.198.208.73 << 'EOF'
           echo "Pulling latest code..."
+          cd /ubuntu/home/back-end
           echo "Stashing local changes (if any)..."
           git stash || true
           echo "Pulling latest changes from the repository..."
