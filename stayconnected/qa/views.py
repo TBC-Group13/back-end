@@ -22,7 +22,7 @@ class QuestionListCreateAPIView(APIView):
             tags_data = request.data.get('tags', [])
             tags = []
             for tag_name in tags_data:
-                tag, created = Tag.objects.get_or_create(name=tag_name)
+                tag, created = Tag.objects.get_or_create(id=tag_name)
                 tags.append(tag)
 
             question = serializer.save(author=request.user)
@@ -30,6 +30,22 @@ class QuestionListCreateAPIView(APIView):
             question.save()
             return Response(QuestionSerializer(question).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserQuestionListAPIView(APIView):
+    """
+    API endpoint to retrieve questions created by the authenticated user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        questions = Question.objects.filter(author=request.user)
+        questions = questions.order_by('-created_at')
+        serializer = QuestionSerializer(questions, many=True)
+        return Response({
+            'total_questions': questions.count(),
+            'results': serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class AnswerListCreateAPIView(APIView):
@@ -155,3 +171,12 @@ class QuestionAnswersListView(generics.ListAPIView):
         }
 
         return response
+
+
+"""
+curl -X GET http://127.0.0.1:8000/api/questions/ \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNTc2NDk1LCJpYXQiOjE3MzM1NzI4OTUsImp0aSI6ImNmNTg4YmNkZGFkMTQ4MzZiNmRhNjU1ZmQ2Mjg5MDA4IiwidXNlcl9pZCI6MX0.fED_pREN9kesMiXXPIXe5kQFKUjKB9UrAuaJHlb3uyc" \
+-d '{ "title": "Advanced Django Query Optimization Techniques", "description": "Detailed explanation of how to use select_related(), prefetch_related(), and other query optimization methods in a large Django project.", "tags": [1] }'
+
+"""
