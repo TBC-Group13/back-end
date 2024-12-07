@@ -1,6 +1,7 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from .models import Question, Answer, Tag
 from .serializers import QuestionSerializer, CreateQuestionSerializer, AnswerSerializer, TagSerializer
@@ -126,3 +127,38 @@ class SearchAPIView(APIView):
 
         return Response(results, status=status.HTTP_200_OK)
 
+
+class QuestionAnswersListView(generics.ListAPIView):
+    """
+    API endpoint to retrieve all answers for a specific question,
+    including detailed user information.
+    """
+    serializer_class = AnswerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the question_id from the URL
+        question_id = self.kwargs.get('question_id')
+
+        # Retrieve the question or return 404 if not found
+        question = get_object_or_404(Question, id=question_id)
+
+        # Return all answers for this question,
+        # prefetching related data to optimize database queries
+        return Answer.objects.filter(question=question).select_related('author').prefetch_related('likes', 'dislikes')
+
+    def list(self, request, *args, **kwargs):
+        # Override list method to add extra context if needed
+        response = super().list(request, *args, **kwargs)
+
+        # Optionally, you can add additional metadata about the question
+        question_id = self.kwargs.get('question_id')
+        question = get_object_or_404(Question, id=question_id)
+        response.data = {
+            'question_id': question.id,
+            'question_title': question.title,
+            'answers_count': response.data.__len__(),
+            'results': response.data
+        }
+
+        return response
