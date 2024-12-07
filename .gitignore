@@ -3,5 +3,4 @@ __pycache__
 .idea
  *.pyc
 **/__pycache__/
-
-
+stayconnected/stayconnected/settings.py
