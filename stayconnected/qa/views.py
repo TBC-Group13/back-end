@@ -79,7 +79,8 @@ class MarkCorrectAnswerAPIView(APIView):
             return Response({"error": "Answer not found"}, status=status.HTTP_404_NOT_FOUND)
 
         if answer.question.author != request.user:
-            return Response({"error": "Only the question author can mark an answer as correct"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "Only the question author can mark an answer as correct"},
+                            status=status.HTTP_403_FORBIDDEN)
 
         Answer.objects.filter(question=answer.question).update(is_correct=False)
         answer.is_correct = True
@@ -139,19 +140,11 @@ class QuestionAnswersListView(generics.ListAPIView):
     def get_queryset(self):
         # Get the question_id from the URL
         question_id = self.kwargs.get('question_id')
-
-        # Retrieve the question or return 404 if not found
         question = get_object_or_404(Question, id=question_id)
-
-        # Return all answers for this question,
-        # prefetching related data to optimize database queries
         return Answer.objects.filter(question=question).select_related('author').prefetch_related('likes', 'dislikes')
 
     def list(self, request, *args, **kwargs):
-        # Override list method to add extra context if needed
         response = super().list(request, *args, **kwargs)
-
-        # Optionally, you can add additional metadata about the question
         question_id = self.kwargs.get('question_id')
         question = get_object_or_404(Question, id=question_id)
         response.data = {
