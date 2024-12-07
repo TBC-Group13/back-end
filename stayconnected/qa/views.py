@@ -6,13 +6,20 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Question, Answer, Tag
 from .serializers import QuestionSerializer, CreateQuestionSerializer, AnswerSerializer, TagSerializer
 from django.db.models import Q
-
+from django_filters.rest_framework import DjangoFilterBackend
 
 class QuestionListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tags__name']
 
     def get(self, request):
+        tags = self.request.query_params.getlist('tags')
         questions = Question.objects.all()
+        tag_queries = Q()
+        for tag in tags:
+            tag_queries |= Q(tags__name__iexact=tag)
+        questions = questions.filter(tag_queries).distinct()
         serializer = QuestionSerializer(questions, many=True)
         return Response(serializer.data)
 
@@ -171,12 +178,3 @@ class QuestionAnswersListView(generics.ListAPIView):
         }
 
         return response
-
-
-"""
-curl -X GET http://127.0.0.1:8000/api/questions/ \
--H "Content-Type: application/json" \
--H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNTc2NDk1LCJpYXQiOjE3MzM1NzI4OTUsImp0aSI6ImNmNTg4YmNkZGFkMTQ4MzZiNmRhNjU1ZmQ2Mjg5MDA4IiwidXNlcl9pZCI6MX0.fED_pREN9kesMiXXPIXe5kQFKUjKB9UrAuaJHlb3uyc" \
--d '{ "title": "Advanced Django Query Optimization Techniques", "description": "Detailed explanation of how to use select_related(), prefetch_related(), and other query optimization methods in a large Django project.", "tags": [1] }'
-
-"""
