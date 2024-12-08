@@ -31,10 +31,9 @@ class QuestionListCreateAPIView(APIView):
             tag_queries |= Q(tags__name__iexact=tag)
         if tags:
             questions = questions.filter(tag_queries).distinct()
-        paginator = self.pagination_class()
-        paginated_questions = paginator.paginate_queryset(questions, request)
-        serializer = QuestionSerializer(paginated_questions, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        questions = questions.filter(tag_queries).distinct()
+        serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         serializer = CreateQuestionSerializer(data=request.data)
@@ -62,10 +61,11 @@ class UserQuestionListAPIView(APIView):
     def get(self, request):
         questions = Question.objects.filter(author=request.user)
         questions = questions.order_by('-created_at')
-        paginator = self.pagination_class()
-        paginated_questions = paginator.paginate_queryset(questions, request)
-        serializer = QuestionSerializer(paginated_questions, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        serializer = QuestionSerializer(questions, many=True)
+        return Response({
+            'total_questions': questions.count(),
+            'results': serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class AnswerListCreateAPIView(APIView):
