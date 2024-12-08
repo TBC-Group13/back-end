@@ -291,6 +291,10 @@ curl -X PATCH http://127.0.0.1:8000/api/user/settings/ \
      -H "Authorization: Bearer ACCESS_TOKEN" \
      -F "username=newusername" 
 ```
+## More details and API documentation
+```
+http://127.0.0.1:8000/docs/
+```
 
 # General Notes:
 **Ensure the server is running and accessible when making requests.**

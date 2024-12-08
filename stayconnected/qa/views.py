@@ -195,12 +195,3 @@ class QuestionAnswersListView(generics.ListAPIView):
         }
 
         return response
-
-
-"""
-curl -X POST http://127.0.0.1:8000/api/questions/64/answers/ \
-     -H "Content-Type: application/json" \
-     -H "Accept: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNjU2OTAzLCJpYXQiOjE3MzM2NTMzMDMsImp0aSI6IjkwMjJmNzMwNzE0NjRiOTBiY2EyYWU0OThhYzJlNWYyIiwidXNlcl9pZCI6MX0.r9dh1Spn64mSydvqi_DJWaulIUv5AkyYvwtWwCJadBs" \
-     -d '{"text": "You can use Django Rest Framework's built-in TokenAuthentication or JWT for API authentication."}'   
-"""
