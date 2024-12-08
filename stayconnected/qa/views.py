@@ -25,6 +25,7 @@ class QuestionListCreateAPIView(APIView):
     def get(self, request):
         tags = self.request.query_params.getlist('tags')
         questions = Question.objects.all()
+        questions = questions.order_by('-created_at')
         tag_queries = Q()
         for tag in tags:
             tag_queries |= Q(tags__name__iexact=tag)
