@@ -16,8 +16,3 @@ urlpatterns = [
     path('personal/questions/', UserQuestionListAPIView.as_view(), name='user-questions'),
 ]
 
-"""
-curl -X GET http://127.0.0.1:8000/api/personal/questions/ \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNTc2NDk1LCJpYXQiOjE3MzM1NzI4OTUsImp0aSI6ImNmNTg4YmNkZGFkMTQ4MzZiNmRhNjU1ZmQ2Mjg5MDA4IiwidXNlcl9pZCI6MX0.fED_pREN9kesMiXXPIXe5kQFKUjKB9UrAuaJHlb3uyc"
-"""

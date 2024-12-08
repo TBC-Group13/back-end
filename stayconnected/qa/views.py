@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
@@ -9,8 +10,15 @@ from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 
 
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
 class QuestionListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['tags__name']
 
@@ -20,9 +28,12 @@ class QuestionListCreateAPIView(APIView):
         tag_queries = Q()
         for tag in tags:
             tag_queries |= Q(tags__name__iexact=tag)
-        questions = questions.filter(tag_queries).distinct()
-        serializer = QuestionSerializer(questions, many=True)
-        return Response(serializer.data)
+        if tags:
+            questions = questions.filter(tag_queries).distinct()
+        paginator = self.pagination_class()
+        paginated_questions = paginator.paginate_queryset(questions, request)
+        serializer = QuestionSerializer(paginated_questions, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = CreateQuestionSerializer(data=request.data)
@@ -45,15 +56,15 @@ class UserQuestionListAPIView(APIView):
     API endpoint to retrieve questions created by the authenticated user.
     """
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
 
     def get(self, request):
         questions = Question.objects.filter(author=request.user)
         questions = questions.order_by('-created_at')
-        serializer = QuestionSerializer(questions, many=True)
-        return Response({
-            'total_questions': questions.count(),
-            'results': serializer.data
-        }, status=status.HTTP_200_OK)
+        paginator = self.pagination_class()
+        paginated_questions = paginator.paginate_queryset(questions, request)
+        serializer = QuestionSerializer(paginated_questions, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class AnswerListCreateAPIView(APIView):

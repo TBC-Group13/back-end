@@ -1,6 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.messages.storage import default_storage
 from django.core.paginator import Paginator, EmptyPage
+from django.db import transaction
 from django.db.models import Sum, F
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -273,3 +274,17 @@ class UserReputationListAPIView(APIView):
             'current_page': page,
             'page_size': page_size,
         })
+
+
+class DeleteUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        try:
+            user.delete()
+            return Response({"message": "User account has been deleted successfully."},
+                            status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({"error": "An error occurred while deleting the user."},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)

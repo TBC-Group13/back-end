@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 from .views import UserRegistrationView, UserLoginView, UserProfileView, UserReputationAPIView, UserSettingsView, \
-    UserLogoutView, UserReputationListAPIView
+    UserLogoutView, UserReputationListAPIView, DeleteUserView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
@@ -14,5 +14,6 @@ urlpatterns = [
     path('users/<int:user_id>/reputation/', UserReputationAPIView.as_view(), name='user-reputation'),
     path('user/settings/', UserSettingsView.as_view(), name='user-settings'),
     path('users/reputation/', UserReputationListAPIView.as_view(), name='user-reputation-list'),
+    path('users/delete/', DeleteUserView.as_view(), name='user-delete'),
 ]
 
