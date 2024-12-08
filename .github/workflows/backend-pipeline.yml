@@ -45,6 +45,7 @@ jobs:
           cd /home/ubuntu/back-end && \
           git pull origin main
           git reset --hard
+          cp /tmp/settings.py.bak stayconnected/stayconnected/settings.py
          
           echo "Running migrations..."
           source venv/bin/activate
