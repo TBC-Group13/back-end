@@ -30,9 +30,9 @@ jobs:
       run: |
         source venv/bin/activate
         cd stayconnected
-        python manage.py makemigrations
-        python manage.py migrate
-        python manage.py collectstatic --noinput
+        python3 manage.py makemigrations
+        python3 manage.py migrate
+        python3 manage.py collectstatic --noinput
         
     - name: Set up SSH key
       uses: webfactory/ssh-agent@v0.5.3
