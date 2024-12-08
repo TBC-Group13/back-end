@@ -30,7 +30,8 @@ jobs:
       run: |
         source venv/bin/activate
         cd stayconnected
-        python manage.py migrate
+        python3 manage.py makemigrations
+        python3 manage.py migrate
         
     - name: Set up SSH key
       uses: webfactory/ssh-agent@v0.5.3
@@ -47,7 +48,9 @@ jobs:
          
           echo "Running migrations..."
           source venv/bin/activate
+          python manage.py stayconnected/makemigrations
           python stayconnected/manage.py migrate
+          python stayconnected/manage.py collectstatic --noinput
 
           echo "Restarting Gunicorn and Nginx..."
           sudo systemctl restart gunicorn
