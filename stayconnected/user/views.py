@@ -183,8 +183,8 @@ class UserSettingsView(APIView):
             user.email = new_email
 
         if 'profile_photo' in data:
-            if user.profile_photo:
-                default_storage.delete(user.profile_photo.path)  # this correct?
+            # if user.profile_photo:
+            #     default_storage.delete(user.profile_photo.path)  # this correct?
 
             user.profile_photo = data['profile_photo']
 
