@@ -173,8 +173,19 @@ class QuestionAnswersListView(generics.ListAPIView):
         response.data = {
             'question_id': question.id,
             'question_title': question.title,
+            'description': question.description,
+            'author': question.author.username,
+            'created_at': question.created_at,
             'answers_count': response.data.__len__(),
             'results': response.data
         }
 
         return response
+
+
+"""
+curl -X GET http://127.0.0.1:8000/api/questions/64/list-answers/ \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNjU2OTAzLCJpYXQiOjE3MzM2NTMzMDMsImp0aSI6IjkwMjJmNzMwNzE0NjRiOTBiY2EyYWU0OThhYzJlNWYyIiwidXNlcl9pZCI6MX0.r9dh1Spn64mSydvqi_DJWaulIUv5AkyYvwtWwCJadBs"
+"""
