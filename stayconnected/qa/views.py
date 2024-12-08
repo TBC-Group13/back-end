@@ -174,7 +174,6 @@ class QuestionAnswersListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Get the question_id from the URL
         question_id = self.kwargs.get('question_id')
         question = get_object_or_404(Question, id=question_id)
         return Answer.objects.filter(question=question).select_related('author').prefetch_related('likes', 'dislikes')

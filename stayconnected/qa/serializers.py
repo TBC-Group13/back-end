@@ -9,7 +9,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField()
+    author = serializers.CharField(source='author.username', read_only=True)
 
     class Meta:
         model = Answer
