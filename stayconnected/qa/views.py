@@ -8,6 +8,7 @@ from .serializers import QuestionSerializer, CreateQuestionSerializer, AnswerSer
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 
+
 class QuestionListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
@@ -175,6 +176,7 @@ class QuestionAnswersListView(generics.ListAPIView):
             'question_title': question.title,
             'description': question.description,
             'author': question.author.username,
+            'completed': question.completed,
             'created_at': question.created_at,
             'answers_count': response.data.__len__(),
             'results': response.data
@@ -184,8 +186,9 @@ class QuestionAnswersListView(generics.ListAPIView):
 
 
 """
-curl -X GET http://127.0.0.1:8000/api/questions/64/list-answers/ \
+curl -X POST http://127.0.0.1:8000/api/questions/64/answers/ \
      -H "Content-Type: application/json" \
      -H "Accept: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNjU2OTAzLCJpYXQiOjE3MzM2NTMzMDMsImp0aSI6IjkwMjJmNzMwNzE0NjRiOTBiY2EyYWU0OThhYzJlNWYyIiwidXNlcl9pZCI6MX0.r9dh1Spn64mSydvqi_DJWaulIUv5AkyYvwtWwCJadBs"
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNjU2OTAzLCJpYXQiOjE3MzM2NTMzMDMsImp0aSI6IjkwMjJmNzMwNzE0NjRiOTBiY2EyYWU0OThhYzJlNWYyIiwidXNlcl9pZCI6MX0.r9dh1Spn64mSydvqi_DJWaulIUv5AkyYvwtWwCJadBs" \
+     -d '{"text": "You can use Django Rest Framework's built-in TokenAuthentication or JWT for API authentication."}'   
 """

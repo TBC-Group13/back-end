@@ -23,7 +23,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['id', 'title', 'description', 'author', 'tags', 'answers', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'description', 'author', 'tags', 'answers', 'created_at', 'updated_at', 'completed']
 
     def get_tags(self, obj):
         return TagSerializer(obj.tags.all(), many=True).data
